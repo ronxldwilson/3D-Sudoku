@@ -5,6 +5,7 @@
 import { useState } from 'react';
 import SudokuBoard from '../components/SudokuBoard'; // 
 import React from 'react';
+import ThreeDSudokuView from '../components/ThreeDSudokuView'
 
 
 const myPuzzles: string[][][] = [
@@ -157,15 +158,18 @@ export default function ThreeDSudoku() {
     return true;
   };
 
-  return (
+    return (
     <div className="p-4 min-h-screen bg-white">
       <h1 className="text-2xl font-bold mb-6 text-center text-black">
-        3D Sudoku (9-Layer Vertical Constraint)
+        3D Sudoku
       </h1>
-      <div className="flex flex-wrap justify-center gap-10">
+      <ThreeDSudokuView cube={cube} />
+      <div className="flex flex-wrap justify-center gap-10 mt-10">
         {cube.map((layerBoard, layerIndex) => (
           <div key={layerIndex} className="space-y-2">
-            <h2 className="text-center font-semibold text-black">Layer {layerIndex + 1}</h2>
+            <h2 className="text-center font-semibold text-black">
+              Layer {layerIndex + 1}
+            </h2>
             <SudokuBoard
               board={layerBoard}
               onChange={(row, col, val) =>

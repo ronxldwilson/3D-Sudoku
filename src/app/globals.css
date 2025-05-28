@@ -24,3 +24,32 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.perspective-3d-container {
+  perspective: 1000px;
+  width: fit-content;
+  margin: 2rem auto;
+}
+
+.sudoku-3d {
+  transform-style: preserve-3d;
+  animation: rotate 20s infinite linear;
+  position: relative;
+  width: max-content;
+  height: max-content;
+}
+
+.sudoku-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotateX(10deg) rotateY(0deg);
+  }
+  to {
+    transform: rotateX(10deg) rotateY(360deg);
+  }
+}
