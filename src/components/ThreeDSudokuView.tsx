@@ -2,7 +2,7 @@
 
 'use client';
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader';
@@ -13,13 +13,19 @@ type ThreeDSudokuViewProps = {
   cube: string[][][];
 };
 
+
 const ThreeDSudokuView: React.FC<ThreeDSudokuViewProps> = ({ cube }) => {
   const mountRef = useRef<HTMLDivElement>(null);
+  const [spacing, setSpacing] = useState<number>(1);
 
   useEffect(() => {
     if (!mountRef.current) return;
 
-    // Scene setup
+    // Clear previous canvas children (renderer.domElement) if any, before creating new renderer
+    while (mountRef.current.firstChild) {
+      mountRef.current.removeChild(mountRef.current.firstChild);
+    }
+
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0xf0f0f0);
 
@@ -35,37 +41,15 @@ const ThreeDSudokuView: React.FC<ThreeDSudokuViewProps> = ({ cube }) => {
     renderer.setSize(mountRef.current.clientWidth, mountRef.current.clientHeight);
     mountRef.current.appendChild(renderer.domElement);
 
-    // OrbitControls for interactivity
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
 
-    // Lighting
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
     scene.add(ambientLight);
     const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
     directionalLight.position.set(10, 10, 10);
     scene.add(directionalLight);
-
-    // Materials
-    const prefilledMaterial = new THREE.MeshPhysicalMaterial({
-      color: 0x0077ff,
-      roughness: 0.2,
-      metalness: 0.4,
-      clearcoat: 0.8,
-      transparent: true,
-      opacity: 0.9,
-    });
-
-    const getColorForValue = (val: string) => {
-      const colors = [
-        0xff6b6b, 0xffb26b, 0xfff56b, 0x6bff95,
-        0x6bdcff, 0x6b8eff, 0xc06bff, 0xff6bd8, 0xaaaaaa,
-      ];
-      return colors[parseInt(val) - 1] || 0xdddddd;
-    };
-
-
 
     const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.6);
     hemiLight.position.set(0, 200, 0);
@@ -76,21 +60,8 @@ const ThreeDSudokuView: React.FC<ThreeDSudokuViewProps> = ({ cube }) => {
     spotLight.castShadow = true;
     scene.add(spotLight);
 
-    const boxHelper = new THREE.BoxHelper(new THREE.Mesh(
-      new THREE.BoxGeometry(9.2, 9.2, 9.2),
-      new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, opacity: 0.3, transparent: true })
-    ));
-    // scene.add(boxHelper);
-
-
-
-    const editableMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
-    const invalidMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000 });
-
-    // Create cubes for each cell
     const cellSize = 1;
-    const spacing = 0.1;
-    const offset = (cellSize + spacing) * 9 / 2;
+    const offset = ((cellSize + spacing) * 9) / 2;
 
     for (let z = 0; z < 9; z++) {
       for (let y = 0; y < 9; y++) {
@@ -100,16 +71,12 @@ const ThreeDSudokuView: React.FC<ThreeDSudokuViewProps> = ({ cube }) => {
 
           const layerColors = [
             0xe0ffe0, 0xc0ffc0, 0xa0ffa0, 0x80ff80, 0x60ff60,
-            0x40ff40, 0x20ff20, 0x00ff00, 0x00cc00
+            0x40ff40, 0x20ff20, 0x00ff00, 0x00cc00,
           ];
 
-
-
-          // Create the cube geometry
           const geometry = new THREE.BoxGeometry(cellSize, cellSize, cellSize);
-          const layerColor = layerColors[z]; // Color by z-layer
+          const layerColor = layerColors[z];
 
-          // Create canvas texture with the number
           const canvas = document.createElement('canvas');
           canvas.width = 128;
           canvas.height = 128;
@@ -126,7 +93,6 @@ const ThreeDSudokuView: React.FC<ThreeDSudokuViewProps> = ({ cube }) => {
           texture.minFilter = THREE.LinearFilter;
           texture.needsUpdate = true;
 
-          // Physical material with color + texture map
           const material = new THREE.MeshPhysicalMaterial({
             color: layerColor,
             roughness: 0.3,
@@ -134,16 +100,14 @@ const ThreeDSudokuView: React.FC<ThreeDSudokuViewProps> = ({ cube }) => {
             clearcoat: 0.6,
             opacity: 0.9,
             transparent: true,
-            map: texture,  // apply texture here
+            map: texture,
           });
 
-          // Create the mesh with the geometry and material
           const cubeMesh = new THREE.Mesh(geometry, material);
 
-          // Position the cube
           cubeMesh.position.set(
-            x * (cellSize + spacing) - offset,
-            y * (cellSize + spacing) - offset,
+            x * (cellSize) - offset,
+            y * (cellSize) - offset,
             z * (cellSize + spacing) - offset
           );
 
@@ -152,8 +116,6 @@ const ThreeDSudokuView: React.FC<ThreeDSudokuViewProps> = ({ cube }) => {
       }
     }
 
-
-    // Animation loop
     const animate = () => {
       requestAnimationFrame(animate);
       controls.update();
@@ -161,13 +123,32 @@ const ThreeDSudokuView: React.FC<ThreeDSudokuViewProps> = ({ cube }) => {
     };
     animate();
 
-    // Cleanup on unmount
+    // Cleanup on unmount or before re-run
     return () => {
+      renderer.dispose();
+      controls.dispose();
+      scene.clear();
       mountRef.current?.removeChild(renderer.domElement);
     };
-  }, [cube]);
+  }, [cube, spacing]); // Add spacing here so scene updates on spacing change
 
-  return <div ref={mountRef} style={{ width: '100%', height: '600px' }} />;
+
+  return (
+    <>
+      <div ref={mountRef} style={{ width: '100%', height: '600px' }} />
+      <label htmlFor="layerSpacing" className='text-black'>Layer Spacing:</label>
+      <input
+        type="range"
+        id="layerSpacing"
+        min="0"
+        max="5"
+        step="0.1"
+        value={spacing}
+        onChange={(e) => setSpacing(parseFloat(e.target.value))}
+      />
+    </>
+  );
+
 };
 
 export default ThreeDSudokuView;
