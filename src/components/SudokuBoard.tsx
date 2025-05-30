@@ -45,6 +45,7 @@ export default function SudokuBoard({
   return (
     <>
       <div className="grid grid-rows-9 gap-1">
+
         {board.map((row, rowIndex) => (
           <div key={rowIndex} className="flex gap-1">
             {row.map((value, colIndex) => {
@@ -91,22 +92,26 @@ export default function SudokuBoard({
 
               return (
 
-                
-                  <input
-                    key={`${rowIndex}-${colIndex}`}
-                    className={`w-10 h-10 text-center text-black text-lg font-semibold focus:outline-none border
-                  ${colIndex % 3 === 0 ? 'border-l-2' : 'border-l'}
-                  ${rowIndex % 3 === 0 ? 'border-t-2' : 'border-t'}
+
+                <input
+                  key={`${rowIndex}-${colIndex}`}
+                  className={`w-10 h-10 text-center text-black text-lg font-semibold focus:outline-none border
+                     
+                  ${rowIndex % 3 === 0 ? 'border-t-4' : 'border-t'}
+                  ${colIndex % 3 === 0 ? 'border-l-4' : 'border-l'}
+                  ${rowIndex === 8 ? 'border-b-4' : ''}
+                  ${colIndex === 8 ? 'border-r-4' : ''}
+
                   ${isSelected ? '' : isPrefilled(rowIndex, colIndex) ? 'bg-gray-300 cursor-not-allowed' : 'bg-white'}
                   ${!valid && !isPrefilled(rowIndex, colIndex) ? 'border-red-500' : 'border-gray-500'}
                   ${highlight}
                 `}
-                    maxLength={1}
-                    value={value}
-                    readOnly={isPrefilled(rowIndex, colIndex)}
-                    onChange={(e) => onChange(rowIndex, colIndex, e.target.value)}
-                    onFocus={() => setSelectedCell(rowIndex, colIndex)}
-                  />
+                  maxLength={1}
+                  value={value}
+                  readOnly={isPrefilled(rowIndex, colIndex)}
+                  onChange={(e) => onChange(rowIndex, colIndex, e.target.value)}
+                  onFocus={() => setSelectedCell(rowIndex, colIndex)}
+                />
 
               );
             })}
@@ -114,6 +119,7 @@ export default function SudokuBoard({
 
         ))}
       </div>
+
       <div className="mt-2 grid grid-cols-9 gap-1 text-xs text-center text-black font-medium">
         {Object.entries(getNumberCounts()).map(([num, count]) => (
           <div key={num} className="p-1 border border-gray-300 rounded bg-gray-100">

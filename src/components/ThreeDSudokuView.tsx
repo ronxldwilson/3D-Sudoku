@@ -59,6 +59,16 @@ const ThreeDSudokuView: React.FC<ThreeDSudokuViewProps> = ({ cube }) => {
       mountRef.current.removeChild(mountRef.current.firstChild);
     }
 
+    const handleResize = () => {
+      if (!mountRef.current) return;
+      camera.aspect = mountRef.current.clientWidth / mountRef.current.clientHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(mountRef.current.clientWidth, mountRef.current.clientHeight);
+    };
+
+    window.addEventListener('resize', handleResize);
+
+
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0xf0f0f0);
 
@@ -68,7 +78,11 @@ const ThreeDSudokuView: React.FC<ThreeDSudokuViewProps> = ({ cube }) => {
       0.1,
       1000
     );
-    camera.position.set(20, 20, 20);
+    if (window.innerWidth < 640) {
+      camera.position.set(25, 25, 25); // Slightly farther out for mobile
+    } else {
+      camera.position.set(20, 20, 20); // Default for desktop
+    }
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(mountRef.current.clientWidth, mountRef.current.clientHeight);
@@ -114,8 +128,8 @@ const ThreeDSudokuView: React.FC<ThreeDSudokuViewProps> = ({ cube }) => {
           if (value === '') continue;
 
           const canvas = document.createElement('canvas');
-          canvas.width = 128;
-          canvas.height = 128;
+          canvas.width = 256;
+          canvas.height = 256;
           const ctx = canvas.getContext('2d')!;
           ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
           ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -208,22 +222,37 @@ const ThreeDSudokuView: React.FC<ThreeDSudokuViewProps> = ({ cube }) => {
       scene.clear();
       mountRef.current?.removeChild(renderer.domElement);
     };
+
+
+    window.removeEventListener('resize', handleResize);
   }, [cube, spacing, selectedCoord]);
 
   return (
     <>
-      <div ref={mountRef} style={{ width: '100%', height: '600px' }} />
-      <label htmlFor="layerSpacing" className='text-black'>Layer Spacing:</label>
-      <input
-        type="range"
-        id="layerSpacing"
-        min="0"
-        max="5"
-        step="0.1"
-        value={spacing}
-        onChange={(e) => setSpacing(parseFloat(e.target.value))}
-      />
+      <div className="flex justify-center items-center w-full mt-6">
+        <div
+          ref={mountRef}
+          className="w-[80vw] max-w-[600px] h-[70vh] sm:h-[800px] rounded-lg shadow-md border bg-white"
+        />
+      </div>
+
+      <div className="flex flex-col items-center mt-4 space-y-2">
+        <label htmlFor="layerSpacing" className="text-black font-medium">
+          Layer Spacing:
+        </label>
+        <input
+          type="range"
+          id="layerSpacing"
+          min="0"
+          max="5"
+          step="0.1"
+          value={spacing}
+          onChange={(e) => setSpacing(parseFloat(e.target.value))}
+          className="w-64"
+        />
+      </div>
     </>
+
   );
 };
 

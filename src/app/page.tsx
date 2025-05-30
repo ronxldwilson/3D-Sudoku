@@ -63,8 +63,43 @@ export default function ThreeDSudoku() {
       <h1 className="text-2xl font-bold mb-6 text-center text-black">
         3D Sudoku
       </h1>
-      {/* <ThreeDSudokuView cube={cube} /> */}
-      <div className="flex flex-wrap justify-center gap-10 mt-10">
+      <div className="bg-white rounded-xl shadow-md p-6 max-w-3xl mx-auto my-8 text-gray-800">
+        <h2 className="text-2xl font-bold mb-4 text-indigo-900">How to Play 3D Sudoku</h2>
+        <ol className="list-decimal list-inside space-y-3 text-base leading-relaxed">
+          <li>
+            The 3D Sudoku puzzle consists of <strong>9 layers</strong>, each a standard 9x9 Sudoku grid.
+          </li>
+          <li>
+            Each layer must follow the classic Sudoku rules:
+            <ul className="list-disc list-inside ml-5 mt-1">
+              <li>Each row must have numbers 1–9 without repetition.</li>
+              <li>Each column must have numbers 1–9 without repetition.</li>
+              <li>Each 3×3 box must have numbers 1–9 without repetition.</li>
+            </ul>
+          </li>
+          <li>
+            <strong>3D Rule:</strong> A number placed at a specific row and column must be unique across all layers in that exact cell position. For example, if Layer 1 has a "5" at (row 2, col 3), no other layer can have a "5" at (row 2, col 3).
+          </li>
+          <li>
+            Click on any editable (non-prefilled) cell to select it. Type a number between 1 and 9 to fill the cell.
+          </li>
+          <li>
+            Invalid moves will be visually indicated. You cannot enter a number that breaks the rules.
+          </li>
+          <li>
+            Solve all 9 layers while satisfying both the traditional and 3D rules to complete the puzzle!
+          </li>
+        </ol>
+        <p className="mt-6 text-sm text-gray-500 italic">
+          Tip: Focus on one layer at a time, but keep cross-layer conflicts in mind.
+        </p>
+        <p className="mt-6 text-sm text-gray-500 italic">
+          Tip 2: To get the better view of all the layers in 2D form, play on desktop and zoom out
+        </p>
+      </div>
+
+      <ThreeDSudokuView cube={cube} />
+      <div className="flex flex-wrap justify-center gap-10 mt-10 mb-40">
         {cube.map((layerBoard, layerIndex) => (
           <div key={layerIndex} className="space-y-2">
             <h2 className="text-center font-semibold text-black">
