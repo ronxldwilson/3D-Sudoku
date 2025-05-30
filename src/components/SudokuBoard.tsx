@@ -91,7 +91,7 @@ export default function SudokuBoard({
 
               return (
 
-                <>
+                
                   <input
                     key={`${rowIndex}-${colIndex}`}
                     className={`w-10 h-10 text-center text-black text-lg font-semibold focus:outline-none border
@@ -107,8 +107,6 @@ export default function SudokuBoard({
                     onChange={(e) => onChange(rowIndex, colIndex, e.target.value)}
                     onFocus={() => setSelectedCell(rowIndex, colIndex)}
                   />
-
-                </>
 
               );
             })}
