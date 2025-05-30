@@ -78,7 +78,7 @@ export default function ThreeDSudoku() {
             </ul>
           </li>
           <li>
-            <strong>3D Rule:</strong> A number placed at a specific row and column must be unique across all layers in that exact cell position. For example, if Layer 1 has a "5" at (row 2, col 3), no other layer can have a "5" at (row 2, col 3).
+            <strong>3D Rule:</strong> A number placed at a specific row and column must be unique across all layers in that exact cell position. For example, if Layer 1 has a &apos;5&apos; at (row 2, col 3), no other layer can have a &apos;5&apos; at (row 2, col 3).
           </li>
           <li>
             Click on any editable (non-prefilled) cell to select it. Type a number between 1 and 9 to fill the cell.
