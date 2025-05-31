@@ -9,6 +9,7 @@ import ThreeDSudokuView from '../components/ThreeDSudokuView'
 import myPuzzles from '../../data/myPuzzles'
 
 export default function ThreeDSudoku() {
+  const [show3D, setShow3D] = useState(true);
   const [cube, setCube] = useState(() =>
     myPuzzles.map(layer => layer.map(row => [...row]))
   );
@@ -98,7 +99,20 @@ export default function ThreeDSudoku() {
         </p>
       </div>
 
-      <ThreeDSudokuView cube={cube} />
+      <div className="text-center mt-6">
+        <label className="inline-flex items-center text-black text-sm">
+          <input
+            type="checkbox"
+            checked={show3D}
+            onChange={() => setShow3D(prev => !prev)}
+            className="form-checkbox h-4 w-4 text-indigo-600"
+          />
+          <span className="ml-2">Enable 3D View</span>
+        </label>
+      </div>
+
+      {show3D && <ThreeDSudokuView cube={cube} />}
+
       <div className="flex flex-wrap justify-center gap-10 mt-10 mb-40">
         {cube.map((layerBoard, layerIndex) => (
           <div key={layerIndex} className="space-y-2">
